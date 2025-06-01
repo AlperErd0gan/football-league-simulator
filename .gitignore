@@ -1,0 +1,18 @@
+# Binaries
+*.exe
+*.out
+*.o
+*.a
+
+# Go workspace
+bin/
+pkg/
+vendor/
+
+# Dependency files
+go.sum
+
+
+# Other files
+command.txt
+git.txt
