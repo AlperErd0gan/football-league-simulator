@@ -21,6 +21,7 @@ func initAPI(l *league.League) {
 func getLeague(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
+	// Sort the table
 	teams := leagueInstance.Teams
 	sort.Slice(teams, func(i, j int) bool {
 		if teams[i].Points == teams[j].Points {
@@ -29,11 +30,15 @@ func getLeague(w http.ResponseWriter, r *http.Request) {
 		return teams[i].Points > teams[j].Points
 	})
 
-	// Last played week's results
-	lastWeek := leagueInstance.Week
-	if lastWeek > 0 {
-		lastWeek--
+	// Find the last played week from the Results slice
+	lastWeek := 0
+	for _, match := range leagueInstance.Results {
+		if match.Week > lastWeek {
+			lastWeek = match.Week
+		}
 	}
+
+
 	var weekResults []league.Match
 	for _, match := range leagueInstance.Results {
 		if match.Week == lastWeek {
@@ -41,7 +46,7 @@ func getLeague(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Prediction
+	// Predictions (simple % based on points)
 	totalPoints := 0
 	for _, team := range teams {
 		totalPoints += team.Points
@@ -51,10 +56,11 @@ func getLeague(w http.ResponseWriter, r *http.Request) {
 		if totalPoints > 0 {
 			predictions[team.Name] = int(float64(team.Points)/float64(totalPoints)*100 + 0.5)
 		} else {
-			predictions[team.Name] = 25 // even chance before games
+			predictions[team.Name] = 25 // default
 		}
 	}
 
+	// Final response
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"week":         leagueInstance.Week,
 		"table":        teams,
@@ -62,6 +68,7 @@ func getLeague(w http.ResponseWriter, r *http.Request) {
 		"predictions":  predictions,
 	})
 }
+
 
 
 func playNextWeek(w http.ResponseWriter, r *http.Request) {

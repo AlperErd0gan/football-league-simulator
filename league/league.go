@@ -58,6 +58,7 @@ func (l *League) PlayNextWeek() bool {
 	fmt.Printf("\n▶️  Week %d Results:\n", l.Week+1)
 	for _, m := range matches {
 		result := l.Simulator.SimulateMatch(m.Home, m.Away)
+		result.Week = l.Week + 1  // 🛠️ FIX: Set the correct week
 		l.Results = append(l.Results, result)
 		fmt.Printf("%s %d - %d %s\n", result.Home.Name, result.HomeGoals, result.AwayGoals, result.Away.Name)
 	}
@@ -66,6 +67,7 @@ func (l *League) PlayNextWeek() bool {
 	l.PrintTable()
 	return true
 }
+
 
 func (l *League) PrintTable() {
 	fmt.Println("\n🏆 League Table:")
