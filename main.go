@@ -16,7 +16,7 @@ func main() {
 	l := league.NewLeague(teams, &league.StrengthBasedSimulator{})
 
 	initAPI(l)
-
+	http.Handle("/", http.FileServer(http.Dir("./static"))) 
 	fmt.Println("🚀 Server running at http://localhost:8080")
 	http.ListenAndServe(":8080", nil)
 }

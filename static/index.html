@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Football League Simulator</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    table, th, td { border: 1px solid black; border-collapse: collapse; padding: 5px; }
+    button { margin-right: 10px; }
+  </style>
+</head>
+<body>
+  <h1>🏆 Football League Simulator</h1>
+
+  <div>
+    <button onclick="playWeek()">▶️ Play Next Week</button>
+    <button onclick="playAll()">🏁 Play All Weeks</button>
+  </div>
+
+  <h2>📋 League Table</h2>
+  <table id="leagueTable">
+    <thead>
+      <tr><th>Team</th><th>Points</th><th>GD</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h2>📅 This Week's Match Results</h2>
+  <ul id="results"></ul>
+
+  <script>
+   async function fetchLeague() {
+  const res = await fetch("/league");
+  const data = await res.json();
+
+  // Update league table
+  const tableBody = document.querySelector("#leagueTable tbody");
+  tableBody.innerHTML = "";
+  data.table.forEach(team => {
+    const row = `<tr>
+      <td>${team.Name}</td>
+      <td>${team.Points}</td>
+      <td>${team.GoalsScored - team.GoalsAgainst}</td>
+    </tr>`;
+    tableBody.innerHTML += row;
+  });
+
+  // Update match results
+  const resultsList = document.querySelector("#results");
+  resultsList.innerHTML = "";
+  data.matchResults.forEach(m => {
+    const line = `<li>${m.Home.Name} ${m.HomeGoals} - ${m.AwayGoals} ${m.Away.Name}</li>`;
+    resultsList.innerHTML += line;
+  });
+}
+
+
+    async function playWeek() {
+      await fetch("/play/week", { method: "POST" });
+      fetchLeague();
+    }
+
+    async function playAll() {
+      await fetch("/play/all", { method: "POST" });
+      fetchLeague();
+    }
+
+    fetchLeague(); // Initial load
+  </script>
+</body>
+</html>
