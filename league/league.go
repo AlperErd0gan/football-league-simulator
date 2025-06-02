@@ -3,6 +3,8 @@ package league
 import (
 	"fmt"
 	"sort"
+	"gorm.io/gorm"
+	"football-league/models" 
 )
 
 type League struct {
@@ -11,14 +13,16 @@ type League struct {
 	Week      int
 	Fixtures  [][]Match
 	Results   []Match
+	DB        *gorm.DB 
 }
 
-func NewLeague(teams []*Team, simulator Simulator) *League {
+func NewLeague(teams []*Team, simulator Simulator, db *gorm.DB) *League {
 	return &League{
 		Teams:     teams,
 		Simulator: simulator,
 		Week:      0,
 		Fixtures:  generateFixtures(teams),
+		DB:        db,
 	}
 }
 
@@ -60,6 +64,25 @@ func (l *League) PlayNextWeek() bool {
 		result := l.Simulator.SimulateMatch(m.Home, m.Away)
 		result.Week = l.Week + 1  // 🛠️ FIX: Set the correct week
 		l.Results = append(l.Results, result)
+
+	l.DB.Create(&models.MatchModel{
+	Week:      result.Week,
+	Home:      result.Home.Name,
+	Away:      result.Away.Name,
+	HomeGoals: result.HomeGoals,
+	AwayGoals: result.AwayGoals,
+	})
+
+	l.DB.Model(&models.TeamModel{}).Where("name = ?", result.Home.Name).Updates(map[string]interface{}{
+		"Points":       result.Home.Points,
+		"GoalsScored":  result.Home.GoalsScored,
+		"GoalsAgainst": result.Home.GoalsAgainst,
+	})
+	l.DB.Model(&models.TeamModel{}).Where("name = ?", result.Away.Name).Updates(map[string]interface{}{
+		"Points":       result.Away.Points,
+		"GoalsScored":  result.Away.GoalsScored,
+		"GoalsAgainst": result.Away.GoalsAgainst,
+	})
 		fmt.Printf("%s %d - %d %s\n", result.Home.Name, result.HomeGoals, result.AwayGoals, result.Away.Name)
 	}
 

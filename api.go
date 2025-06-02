@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"football-league/league"
 	"sort"
+	"football-league/models" 
 )
 
 
@@ -16,6 +17,19 @@ func initAPI(l *league.League) {
 	http.HandleFunc("/league", getLeague)
 	http.HandleFunc("/play/week", playNextWeek)
 	http.HandleFunc("/play/all", playAllWeeks)
+
+	http.HandleFunc("/debug/db", func(w http.ResponseWriter, r *http.Request) {
+		var teams []models.TeamModel
+		var matches []models.MatchModel
+		DB.Find(&teams)
+		DB.Find(&matches)
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"teams":   teams,
+			"matches": matches,
+		})
+	})
 }
 
 func getLeague(w http.ResponseWriter, r *http.Request) {
@@ -87,3 +101,4 @@ func playAllWeeks(w http.ResponseWriter, r *http.Request) {
 		"message": "All weeks played",
 	})
 }
+
