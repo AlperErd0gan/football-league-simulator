@@ -28,29 +28,43 @@ func NewLeague(teams []*Team, simulator Simulator, db *gorm.DB) *League {
 
 func generateFixtures(teams []*Team) [][]Match {
 	n := len(teams)
-	copyTeams := make([]*Team, n)
-	copy(copyTeams, teams)
-
 	var fixtures [][]Match
 
+	// First leg (round-robin)
 	for week := 0; week < n-1; week++ {
 		var weekMatches []Match
 		for i := 0; i < n/2; i++ {
-			home := copyTeams[i]
-			away := copyTeams[n-1-i]
-			weekMatches = append(weekMatches, Match{Week: week + 1, Home: home, Away: away})
+			home := teams[i]
+			away := teams[n-1-i]
+			if week%2 == 0 {
+				weekMatches = append(weekMatches, Match{Week: week + 1, Home: home, Away: away})
+			} else {
+				weekMatches = append(weekMatches, Match{Week: week + 1, Home: away, Away: home})
+			}
 		}
-		// rotate
-		temp := copyTeams[1]
-		for i := 1; i < n-1; i++ {
-			copyTeams[i] = copyTeams[i+1]
-		}
-		copyTeams[n-1] = temp
-
+		// Rotate teams except the first one
+		rotated := append([]*Team{teams[0]}, append(teams[n-1:], teams[1:n-1]...)...)
+		copy(teams, rotated)
 		fixtures = append(fixtures, weekMatches)
 	}
+
+	// Second leg (reverse fixtures)
+	offset := len(fixtures)
+	for _, matches := range fixtures {
+		var reverseWeek []Match
+		for _, match := range matches {
+			reverseWeek = append(reverseWeek, Match{
+				Week:      match.Week + offset,
+				Home:      match.Away,
+				Away:      match.Home,
+			})
+		}
+		fixtures = append(fixtures, reverseWeek)
+	}
+
 	return fixtures
 }
+
 
 func (l *League) PlayNextWeek() bool {
 	if l.Week >= len(l.Fixtures) {

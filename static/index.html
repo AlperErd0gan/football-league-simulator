@@ -24,35 +24,53 @@
     <tbody></tbody>
   </table>
 
-  <h2>📅 This Week's Match Results</h2>
+<h2 id="weekTitle">📅 Match Results</h2>
+
   <ul id="results"></ul>
 
+  <h2>🔮 Predictions</h2>
+  <ul id="predictions"></ul>
+
+
   <script>
-   async function fetchLeague() {
-  const res = await fetch("/league");
-  const data = await res.json();
+  async function fetchLeague() {
 
-  // Update league table
-  const tableBody = document.querySelector("#leagueTable tbody");
-  tableBody.innerHTML = "";
-  data.table.forEach(team => {
-    const row = `<tr>
-      <td>${team.Name}</td>
-      <td>${team.Points}</td>
-      <td>${team.GoalsScored - team.GoalsAgainst}</td>
-    </tr>`;
-    tableBody.innerHTML += row;
-  });
+    const res = await fetch("/league");
+    const data = await res.json();
 
-  // Update match results
-  const resultsList = document.querySelector("#results");
-  resultsList.innerHTML = "";
-  data.matchResults.forEach(m => {
-    const line = `<li>${m.Home.Name} ${m.HomeGoals} - ${m.AwayGoals} ${m.Away.Name}</li>`;
-    resultsList.innerHTML += line;
-  });
-}
+    // Update league table
+    const tableBody = document.querySelector("#leagueTable tbody");
+    tableBody.innerHTML = "";
+    data.table.forEach(team => {
+      const row = `<tr>
+        <td>${team.Name}</td>
+        <td>${team.Points}</td>
+        <td>${team.GoalsScored - team.GoalsAgainst}</td>
+      </tr>`;
+      tableBody.innerHTML += row;
+    });
 
+    // Update match results
+    const resultsList = document.querySelector("#results");
+    resultsList.innerHTML = "";
+    data.matchResults.forEach(m => {
+      const line = `<li>${m.Home.Name} ${m.HomeGoals} - ${m.AwayGoals} ${m.Away.Name}</li>`;
+      resultsList.innerHTML += line;
+    });
+
+    updateWeekTitle();
+
+    // 🔮 Show prediction after week 4
+    const predictionList = document.querySelector("#predictions");
+    predictionList.innerHTML = "";
+    if (data.week >= 4) {
+      for (const [team, percent] of Object.entries(data.predictions)) {
+        predictionList.innerHTML += `<li>${team}: ${percent}% chance to win</li>`;
+      }
+    }
+  }
+
+ 
 
     async function playWeek() {
       await fetch("/play/week", { method: "POST" });
@@ -65,6 +83,18 @@
     }
 
     fetchLeague(); // Initial load
+
+
+    async function updateWeekTitle() {
+      const res = await fetch("/week");
+      const data = await res.json();
+      const weekTitle = document.getElementById("weekTitle");
+      weekTitle.textContent = `📅 Week ${data.week} Match Results`;
+    }
+
+
+
+    
   </script>
 </body>
 </html>

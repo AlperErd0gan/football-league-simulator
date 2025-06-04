@@ -17,6 +17,8 @@ func initAPI(l *league.League) {
 	http.HandleFunc("/league", getLeague)
 	http.HandleFunc("/play/week", playNextWeek)
 	http.HandleFunc("/play/all", playAllWeeks)
+	http.HandleFunc("/week", getCurrentWeek) // add this in initAPI
+
 
 	http.HandleFunc("/debug/db", func(w http.ResponseWriter, r *http.Request) {
 		var teams []models.TeamModel
@@ -99,6 +101,22 @@ func playAllWeeks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"message": "All weeks played",
+	})
+}
+
+
+func getCurrentWeek(w http.ResponseWriter, r *http.Request) {
+	var lastMatch models.MatchModel
+	result := DB.Order("week desc").First(&lastMatch)
+
+	week := 0
+	if result.Error == nil {
+		week = lastMatch.Week
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"week": week,
 	})
 }
 
