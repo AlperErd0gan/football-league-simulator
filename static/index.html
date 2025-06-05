@@ -12,28 +12,53 @@
   <h1>🏆 Football League Simulator</h1>
 
   <div>
-    <button onclick="playWeek()">▶️ Play Next Week</button>
-    <button onclick="playAll()">🏁 Play All Weeks</button>
+    <button id="playWeekBtn" onclick="playWeek()">▶️ Play Next Week</button>
+    <button id="playAllBtn" onclick="playAll()">🏁 Play All Weeks</button>
     <button onclick="restartLeague()">🔄 Restart League</button> <!-- New button -->
   </div>
 
-  <h2>📋 League Table</h2>
-  <table id="leagueTable">
-    <thead>
-      <tr><th>Team</th><th>Points</th><th>GD</th></tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+<div style="display: flex; gap: 40px; align-items: flex-start;">
+  <div>
+    <h2>📋 League Table</h2>
+    <table id="leagueTable">
+      <thead>
+        <tr><th>Team</th><th>Points</th><th>GD</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
-<h2 id="weekTitle">📅 Match Results</h2>
+  <div>
+    <h2 id="weekTitle">📅 Match Results</h2>
+    <ul id="results"></ul>
+  </div>
+</div>
 
-  <ul id="results"></ul>
+  <div id="predictionSection">
+    <h2>🔮 Predictions</h2>
+    <ul id="predictions"></ul>
+  </div>
 
-  <h2>🔮 Predictions</h2>
-  <ul id="predictions"></ul>
 
 
   <script>
+
+  async function fetchAllResults() {
+    const res = await fetch("/results/all");
+    const data = await res.json();
+
+    const resultsList = document.getElementById("results");
+    resultsList.innerHTML = "";
+
+    const weeks = Object.keys(data).sort((a, b) => a - b);
+    weeks.forEach(week => {
+      resultsList.innerHTML += `<strong>📅 Week ${week}</strong>`;
+      data[week].forEach(match => {
+        resultsList.innerHTML += `<li>${match.Home} ${match.HomeGoals} - ${match.AwayGoals} ${match.Away}</li>`;
+      });
+    });
+  }
+
   async function fetchLeague() {
 
     const res = await fetch("/league");
@@ -85,24 +110,63 @@
 
     async function playAll() {
       await fetch("/play/all", { method: "POST" });
-      fetchLeague();
+      await fetchLeague();
+      await fetchAllResults();
     }
 
     async function restartLeague() {
       await fetch("/restart", { method: "POST" });
-      fetchLeague(); // Refresh league table
+
+      // Refresh league table
+      fetchLeague();
+
+      // Clear results section
+      const resultsList = document.getElementById("results");
+      resultsList.innerHTML = "";
+
+      // Clear prediction section
+      const predictionList = document.getElementById("predictions");
+      predictionList.innerHTML = "";
+
+      // Update week title to reflect reset
+      updateWeekTitle();
+
+      // Re-enable buttons
+      document.getElementById("playWeekBtn").disabled = false;
+      document.getElementById("playAllBtn").disabled = false;
+
     }
+
 
 
     fetchLeague(); // Initial load
 
 
-    async function updateWeekTitle() {
-      const res = await fetch("/week");
-      const data = await res.json();
-      const weekTitle = document.getElementById("weekTitle");
+  async function updateWeekTitle() {
+    const res = await fetch("/week");
+    const data = await res.json();
+    const weekTitle = document.getElementById("weekTitle");
+
+    if (data.week === 0) {
+      weekTitle.textContent = "📅 No matches played yet";
+    } else if (data.week >= 6) {
+      weekTitle.textContent = "🏆 League has ended";
+    } else {
       weekTitle.textContent = `📅 Week ${data.week} Match Results`;
     }
+
+      const playWeekBtn = document.getElementById("playWeekBtn");
+      const playAllBtn = document.getElementById("playAllBtn");
+
+      if (data.week >= 6) {
+        playWeekBtn.disabled = true;
+        playAllBtn.disabled = true;
+      } else {
+        playWeekBtn.disabled = false;
+        playAllBtn.disabled = false;
+      }
+  }
+
 
 
 

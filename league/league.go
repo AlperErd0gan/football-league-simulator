@@ -127,18 +127,42 @@ func (l *League) PlayAllWeeks() {
 		return
 	}
 	for l.Week < len(l.Fixtures) {
-		if l.Week >= len(l.Fixtures) {
-			fmt.Println("All weeks completed.")
-		}
-
 		matches := l.Fixtures[l.Week]
+		fmt.Printf("\n▶️  Week %d Results:\n", l.Week+1)
+
 		for _, m := range matches {
 			result := l.Simulator.SimulateMatch(m.Home, m.Away)
+			result.Week = l.Week + 1
 			l.Results = append(l.Results, result)
+
+			// ✅ Insert into DB
+			l.DB.Create(&models.MatchModel{
+				Week:      result.Week,
+				Home:      result.Home.Name,
+				Away:      result.Away.Name,
+				HomeGoals: result.HomeGoals,
+				AwayGoals: result.AwayGoals,
+			})
+
+			// ✅ Update team stats in DB
+			l.DB.Model(&models.TeamModel{}).Where("name = ?", result.Home.Name).Updates(map[string]interface{}{
+				"Points":       result.Home.Points,
+				"GoalsScored":  result.Home.GoalsScored,
+				"GoalsAgainst": result.Home.GoalsAgainst,
+			})
+			l.DB.Model(&models.TeamModel{}).Where("name = ?", result.Away.Name).Updates(map[string]interface{}{
+				"Points":       result.Away.Points,
+				"GoalsScored":  result.Away.GoalsScored,
+				"GoalsAgainst": result.Away.GoalsAgainst,
+			})
+
+			fmt.Printf("%s %d - %d %s\n", result.Home.Name, result.HomeGoals, result.AwayGoals, result.Away.Name)
 		}
+
 		l.Week++
 	}
 	fmt.Println("\n✅ All weeks completed.")
 	fmt.Println("\n🏁 Final League Standings:")
 	l.PrintTable()
 }
+

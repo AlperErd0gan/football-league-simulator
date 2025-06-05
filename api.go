@@ -19,6 +19,8 @@ func initAPI(l *league.League) {
 	http.HandleFunc("/play/all", playAllWeeks)
 	http.HandleFunc("/week", getCurrentWeek) // initAPI
 	http.HandleFunc("/restart", restartLeague)
+	http.HandleFunc("/results/all", getAllMatchResults)
+
 
 
 
@@ -165,3 +167,15 @@ func restartLeague(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{"message": "League restarted"})
 }
 
+func getAllMatchResults(w http.ResponseWriter, r *http.Request) {
+	var matches []models.MatchModel
+	DB.Order("week asc").Find(&matches)
+
+	grouped := make(map[int][]models.MatchModel)
+	for _, m := range matches {
+		grouped[m.Week] = append(grouped[m.Week], m)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(grouped)
+}
