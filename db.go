@@ -24,8 +24,8 @@ func InitDB() {
 
 
 	// If I want to reset the auto-increment counters
-	// DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'team_models'")
-	// DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'match_models'")
+	 DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'team_models'")
+	 DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'match_models'")
 
 }
 

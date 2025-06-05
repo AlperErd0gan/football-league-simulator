@@ -17,7 +17,9 @@ func initAPI(l *league.League) {
 	http.HandleFunc("/league", getLeague)
 	http.HandleFunc("/play/week", playNextWeek)
 	http.HandleFunc("/play/all", playAllWeeks)
-	http.HandleFunc("/week", getCurrentWeek) // add this in initAPI
+	http.HandleFunc("/week", getCurrentWeek) // initAPI
+	http.HandleFunc("/restart", restartLeague)
+
 
 
 	http.HandleFunc("/debug/db", func(w http.ResponseWriter, r *http.Request) {
@@ -76,6 +78,8 @@ func getLeague(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+
+
 	// Final response
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"week":         leagueInstance.Week,
@@ -118,5 +122,46 @@ func getCurrentWeek(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"week": week,
 	})
+}
+
+
+func restartLeague(w http.ResponseWriter, r *http.Request) {
+	// Reset DB
+
+	DB.Exec("DELETE FROM team_models")
+	DB.Exec("DELETE FROM match_models")
+
+
+	DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'team_models'")
+	DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'match_models'")
+
+
+	// Re-insert original teams
+	initial := []models.TeamModel{
+		{Name: "Arsenal", Strength: 90},
+		{Name: "Leeds", Strength: 70},
+		{Name: "Everton", Strength: 80},
+		{Name: "Luton", Strength: 50},
+	}
+	for _, t := range initial {
+		DB.Create(&t)
+	}
+
+	// Reset in-memory league
+	var teams []*league.Team
+	for _, t := range initial {
+		teams = append(teams, &league.Team{
+			Name:         t.Name,
+			Strength:     t.Strength,
+			Points:       0,
+			GoalsScored:  0,
+			GoalsAgainst: 0,
+		})
+	}
+
+	leagueInstance = league.NewLeague(teams, &league.StrengthBasedSimulator{}, DB)
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "League restarted"})
 }
 
