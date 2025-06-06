@@ -3,7 +3,7 @@ module github.com/AlperErd0gan/football-league-simulator
 go 1.24
 
 require (
-	gorm.io/driver/sqlite v1.5.7
+	gorm.io/driver/sqlite v1.6.0
 	gorm.io/gorm v1.30.0
 )
 
