@@ -6,6 +6,9 @@ import (
 	"football-league/league"
 	"sort"
 	"football-league/models" 
+	"errors"
+	"gorm.io/gorm" 
+	"log"
 )
 
 
@@ -20,6 +23,8 @@ func initAPI(l *league.League) {
 	http.HandleFunc("/week", getCurrentWeek) // initAPI
 	http.HandleFunc("/restart", restartLeague)
 	http.HandleFunc("/results/all", getAllMatchResults)
+
+	http.HandleFunc("/edit/match", editMatchResult)
 
 
 
@@ -41,8 +46,19 @@ func initAPI(l *league.League) {
 func getLeague(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// Sort the table
-	teams := leagueInstance.Teams
+	var teamModels []models.TeamModel
+	DB.Find(&teamModels)
+
+	var teams []*league.Team
+	for _, t := range teamModels {
+		teams = append(teams, &league.Team{
+			Name:         t.Name,
+			Strength:     t.Strength,
+			Points:       t.Points,
+			GoalsScored:  t.GoalsScored,
+			GoalsAgainst: t.GoalsAgainst,
+		})
+	}
 	sort.Slice(teams, func(i, j int) bool {
 		if teams[i].Points == teams[j].Points {
 			return teams[i].GoalDifference() > teams[j].GoalDifference()
@@ -116,6 +132,10 @@ func getCurrentWeek(w http.ResponseWriter, r *http.Request) {
 	result := DB.Order("week desc").First(&lastMatch)
 
 	week := 0
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		// Sadece ciddi hataları logla
+		log.Println("Unexpected DB error:", result.Error)
+	}
 	if result.Error == nil {
 		week = lastMatch.Week
 	}
@@ -125,6 +145,7 @@ func getCurrentWeek(w http.ResponseWriter, r *http.Request) {
 		"week": week,
 	})
 }
+
 
 
 func restartLeague(w http.ResponseWriter, r *http.Request) {
@@ -179,3 +200,92 @@ func getAllMatchResults(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(grouped)
 }
+
+func editMatchResult(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Only POST method allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var input models.MatchModel
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid input", http.StatusBadRequest)
+		return
+	}
+
+	var match models.MatchModel
+	if err := DB.First(&match, input.ID).Error; err != nil {
+		http.Error(w, "Match not found", http.StatusNotFound)
+		return
+	}
+
+	// Update match with new values
+	match.HomeGoals = input.HomeGoals
+	match.AwayGoals = input.AwayGoals
+	DB.Save(&match)
+
+	// Recalculate standings from scratch
+	recalculateLeague()
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "match updated and standings recalculated"})
+}
+
+
+func recalculateLeague() {
+	var teams []models.TeamModel
+	DB.Find(&teams)
+	for _, team := range teams {
+		team.Points = 0
+		team.GoalsScored = 0
+		team.GoalsAgainst = 0
+		DB.Save(&team)
+	}
+
+	var matches []models.MatchModel
+	DB.Order("week asc").Find(&matches)
+	for _, match := range matches {
+		updateTeamStats(match)
+	}
+
+	// ✅ Reset in-memory league to reflect updated DB
+	var newTeams []*league.Team
+	for _, t := range teams {
+		newTeams = append(newTeams, &league.Team{
+			Name:         t.Name,
+			Strength:     t.Strength,
+			Points:       t.Points,
+			GoalsScored:  t.GoalsScored,
+			GoalsAgainst: t.GoalsAgainst,
+		})
+	}
+	leagueInstance.Teams = newTeams
+}
+
+func updateTeamStats(match models.MatchModel) {
+	var home, away models.TeamModel
+	DB.Where("name = ?", match.Home).First(&home)
+	DB.Where("name = ?", match.Away).First(&away)
+
+	// Update Points
+	if match.HomeGoals > match.AwayGoals {
+		home.Points += 3
+	} else if match.AwayGoals > match.HomeGoals {
+		away.Points += 3
+	} else {
+		home.Points += 1
+		away.Points += 1
+	}
+
+	// Update Goals
+	home.GoalsScored += match.HomeGoals
+	home.GoalsAgainst += match.AwayGoals
+	away.GoalsScored += match.AwayGoals
+	away.GoalsAgainst += match.HomeGoals
+
+	// Save Updates
+	DB.Save(&home)
+	DB.Save(&away)
+}
+
+

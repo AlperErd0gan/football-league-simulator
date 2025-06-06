@@ -14,7 +14,9 @@
   <div>
     <button id="playWeekBtn" onclick="playWeek()">▶️ Play Next Week</button>
     <button id="playAllBtn" onclick="playAll()">🏁 Play All Weeks</button>
-    <button onclick="restartLeague()">🔄 Restart League</button> <!-- New button -->
+    <button onclick="restartLeague()">🔄 Restart League</button> 
+    <button onclick="getAllMatches()">📜 Get All Matches</button>
+
   </div>
 
 <div style="display: flex; gap: 40px; align-items: flex-start;">
@@ -32,12 +34,32 @@
     <h2 id="weekTitle">📅 Match Results</h2>
     <ul id="results"></ul>
   </div>
-</div>
 
-  <div id="predictionSection">
+    <div id="predictionSection">
     <h2>🔮 Predictions</h2>
     <ul id="predictions"></ul>
   </div>
+  <div>
+    <h2>✏️ Edit Match Result</h2>
+    <form id="editMatchForm" onsubmit="editMatch(event)">
+      <label for="matchId">Match ID:</label>
+      <input type="number" id="matchId" required>
+      <br>
+      <label for="homeGoals">Home Goals:</label>
+      <input type="number" id="homeGoals" required>
+      <br>
+      <label for="awayGoals">Away Goals:</label>
+      <input type="number" id="awayGoals" required>
+      <br>
+      <button type="submit">Update Result</button>
+    </form>
+    <p id="editResultMessage"></p>
+  </div>
+</div>
+
+
+
+
 
 
 
@@ -51,12 +73,13 @@
     resultsList.innerHTML = "";
 
     const weeks = Object.keys(data).sort((a, b) => a - b);
-    weeks.forEach(week => {
-      resultsList.innerHTML += `<strong>📅 Week ${week}</strong>`;
-      data[week].forEach(match => {
-        resultsList.innerHTML += `<li>${match.Home} ${match.HomeGoals} - ${match.AwayGoals} ${match.Away}</li>`;
+      weeks.forEach(week => {
+        resultsList.innerHTML += `<h3>📅 Week ${week}</h3><ul>`;
+        data[week].forEach(match => {
+          resultsList.innerHTML += `<li>#${match.ID} — ${match.Home} ${match.HomeGoals} - ${match.AwayGoals} ${match.Away}</li>`;
+        });
+        resultsList.innerHTML += `</ul>`;
       });
-    });
   }
 
   async function fetchLeague() {
@@ -112,6 +135,7 @@
       await fetch("/play/all", { method: "POST" });
       await fetchLeague();
       await fetchAllResults();
+      document.getElementById("results").scrollIntoView({ behavior: "smooth" });
     }
 
     async function restartLeague() {
@@ -167,7 +191,59 @@
       }
   }
 
+  async function getAllMatches() {
+  await fetchAllResults();
+}
 
+async function editMatch(event) {
+  event.preventDefault();
+
+  const id = document.getElementById("matchId").value;
+  const homeGoals = document.getElementById("homeGoals").value;
+  const awayGoals = document.getElementById("awayGoals").value;
+
+  const response = await fetch("/edit/match", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      ID: parseInt(id),
+      HomeGoals: parseInt(homeGoals),
+      AwayGoals: parseInt(awayGoals)
+    })
+  });
+
+  const result = await response.json();
+  document.getElementById("editResultMessage").innerText = result.status || "Something went wrong";
+
+  // Refresh league and results to reflect changes
+  await fetchLeague();
+  await fetchAllResults();
+}
+
+async function editMatch(event) {
+  event.preventDefault();
+
+  const id = document.getElementById("matchId").value;
+  const homeGoals = document.getElementById("homeGoals").value;
+  const awayGoals = document.getElementById("awayGoals").value;
+
+  const response = await fetch("/edit/match", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      ID: parseInt(id),
+      HomeGoals: parseInt(homeGoals),
+      AwayGoals: parseInt(awayGoals)
+    })
+  });
+
+  const result = await response.json();
+  document.getElementById("editResultMessage").innerText = result.status || "Something went wrong";
+
+  // Refresh league and results to reflect changes
+  await fetchLeague();
+  await fetchAllResults();
+}
 
 
     
