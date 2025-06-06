@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"football-league/league"
-	"football-league/models" 
+	"github.com/AlperErd0gan/football-league-simulator/league"
+    "github.com/AlperErd0gan/football-league-simulator/models"
 )
 
 func main() {
