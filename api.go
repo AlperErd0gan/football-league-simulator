@@ -3,13 +3,14 @@ package main
 import (
 	"encoding/json"
 	"net/http"
-	"football-league/league"
 	"sort"
-	"football-league/models" 
+	"github.com/AlperErd0gan/football-league-simulator/league"
+    "github.com/AlperErd0gan/football-league-simulator/models"
 	"errors"
 	"gorm.io/gorm" 
 	"log"
 )
+
 
 
 var leagueInstance *league.League

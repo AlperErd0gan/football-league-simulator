@@ -1,4 +1,4 @@
-module football-league
+module github.com/AlperErd0gan/football-league-simulator
 
 go 1.24
 
