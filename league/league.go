@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 	"gorm.io/gorm"
-	 "github.com/AlperErd0gan/football-league-simulator/models"
+	"github.com/AlperErd0gan/football-league-simulator/models"
 )
 
 type League struct {

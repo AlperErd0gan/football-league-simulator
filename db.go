@@ -4,7 +4,7 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"log"
-		"github.com/AlperErd0gan/football-league-simulator/models"
+	"github.com/AlperErd0gan/football-league-simulator/models"
 )
 
 var DB *gorm.DB
