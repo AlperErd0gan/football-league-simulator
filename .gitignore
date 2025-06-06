@@ -9,8 +9,6 @@ bin/
 pkg/
 vendor/
 
-# Dependency files
-go.sum
 
 
 # Other files

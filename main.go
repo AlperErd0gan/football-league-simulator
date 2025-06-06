@@ -3,18 +3,17 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"github.com/AlperErd0gan/football-league-simulator/league"
-    "github.com/AlperErd0gan/football-league-simulator/models"
+	"github.com/AlperErd0gan/football-league-simulator/models"
 )
 
 func main() {
-
 	InitDB()
 
 	var teamModels []models.TeamModel
 	DB.Find(&teamModels)
 
-	// If DB is empty, insert initial teams
 	if len(teamModels) == 0 {
 		initial := []models.TeamModel{
 			{Name: "Arsenal", Strength: 90},
@@ -28,7 +27,6 @@ func main() {
 		teamModels = initial
 	}
 
-	// Convert to []*league.Team
 	var teams []*league.Team
 	for _, t := range teamModels {
 		teams = append(teams, &league.Team{
@@ -43,7 +41,14 @@ func main() {
 	l := league.NewLeague(teams, &league.StrengthBasedSimulator{}, DB)
 
 	initAPI(l)
-	http.Handle("/", http.FileServer(http.Dir("./static"))) 
-	fmt.Println("🚀 Server running at http://localhost:8080")
-	http.ListenAndServe(":8080", nil)
+	http.Handle("/", http.FileServer(http.Dir("./static")))
+
+	// ✅ Use PORT from environment for Render compatibility
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // fallback for local dev
+	}
+
+	fmt.Println("🚀 Server running on port:", port)
+	http.ListenAndServe(":"+port, nil)
 }
