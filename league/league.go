@@ -91,11 +91,19 @@ func (l *League) PlayNextWeek() bool {
 		"Points":       result.Home.Points,
 		"GoalsScored":  result.Home.GoalsScored,
 		"GoalsAgainst": result.Home.GoalsAgainst,
+		"GamesPlayed":  result.Home.GamesPlayed,
+		"Wins":         result.Home.Wins,
+		"Draws":        result.Home.Draws,
+		"Losses":       result.Home.Losses,
 	})
 	l.DB.Model(&models.TeamModel{}).Where("name = ?", result.Away.Name).Updates(map[string]interface{}{
 		"Points":       result.Away.Points,
 		"GoalsScored":  result.Away.GoalsScored,
 		"GoalsAgainst": result.Away.GoalsAgainst,
+		"GamesPlayed":  result.Away.GamesPlayed,
+		"Wins":         result.Away.Wins,
+		"Draws":        result.Away.Draws,
+		"Losses":       result.Away.Losses,
 	})
 		fmt.Printf("%s %d - %d %s\n", result.Home.Name, result.HomeGoals, result.AwayGoals, result.Away.Name)
 	}

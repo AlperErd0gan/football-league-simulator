@@ -24,8 +24,19 @@
     <h2>📋 League Table</h2>
     <table id="leagueTable">
       <thead>
-        <tr><th>Team</th><th>Points</th><th>GD</th></tr>
+        <tr>
+          <th>Team</th>
+          <th>PTS</th>
+          <th>P</th>
+          <th>W</th>
+          <th>D</th>
+          <th>L</th>
+          <th>GD</th>
+        </tr>
       </thead>
+
+
+
       <tbody></tbody>
     </table>
   </div>
@@ -39,22 +50,27 @@
     <h2>🔮 Predictions</h2>
     <ul id="predictions"></ul>
   </div>
-  <div>
-    <h2>✏️ Edit Match Result</h2>
-    <form id="editMatchForm" onsubmit="editMatch(event)">
-      <label for="matchId">Match ID:</label>
-      <input type="number" id="matchId" required>
-      <br>
-      <label for="homeGoals">Home Goals:</label>
-      <input type="number" id="homeGoals" required>
-      <br>
-      <label for="awayGoals">Away Goals:</label>
-      <input type="number" id="awayGoals" required>
-      <br>
-      <button type="submit">Update Result</button>
-    </form>
-    <p id="editResultMessage"></p>
-  </div>
+    <div>
+      <h2>✏️ Edit Match Result</h2>
+      <p style="max-width: 400px;">
+        To edit a match, first click <strong>"📜 Get All Matches"</strong> and find the ID of the match you want to update. Then enter the ID and new scores below.<br>
+        <em>(Match IDs are shown with a <strong>#</strong> symbol, e.g., <strong>#1</strong>)</em>
+      </p>
+      <form id="editMatchForm" onsubmit="editMatch(event)">
+        <label for="matchId">Match ID:</label>
+        <input type="number" id="matchId" required>
+
+        <label for="homeGoals">Home Goals:</label>
+        <input type="number" id="homeGoals" required>
+
+        <label for="awayGoals">Away Goals:</label>
+        <input type="number" id="awayGoals" required>
+
+        <button type="submit">Update Result</button>
+      </form>
+      <p id="editResultMessage"></p>
+    </div>
+
 </div>
 
 
@@ -91,11 +107,18 @@
     const tableBody = document.querySelector("#leagueTable tbody");
     tableBody.innerHTML = "";
     data.table.forEach(team => {
-      const row = `<tr>
-        <td>${team.Name}</td>
-        <td>${team.Points}</td>
-        <td>${team.GoalsScored - team.GoalsAgainst}</td>
-      </tr>`;
+    const row = `<tr>
+      <td>${team.Name}</td>
+      <td>${team.Points}</td>
+      <td>${team.GamesPlayed}</td>
+      <td>${team.Wins}</td>
+      <td>${team.Draws}</td>
+      <td>${team.Losses}</td>
+      <td>${team.GoalsScored - team.GoalsAgainst}</td>
+    </tr>`;
+
+
+
       tableBody.innerHTML += row;
     });
 
@@ -152,6 +175,9 @@
       const predictionList = document.getElementById("predictions");
       predictionList.innerHTML = "";
 
+      const resultEditText = document.getElementById("editResultMessage");
+     document.getElementById("editResultMessage").innerText = "League has been reset. You can now play the first week.";
+
       // Update week title to reflect reset
       updateWeekTitle();
 
@@ -193,6 +219,8 @@
 
   async function getAllMatches() {
   await fetchAllResults();
+  const title = document.getElementById("weekTitle");
+  title.textContent = "📜 All Matches";
 }
 
 async function editMatch(event) {
@@ -248,5 +276,33 @@ async function editMatch(event) {
 
     
   </script>
+  <style>
+  #editMatchForm {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 10px 16px;
+    align-items: center;
+    max-width: 400px;
+  }
+
+  #editMatchForm label {
+    text-align: right;
+  }
+
+  #editMatchForm input {
+    width: 100%;
+    padding: 6px;
+  }
+
+  #editMatchForm button {
+    grid-column: 2; /* Align button under inputs */
+    padding: 8px 12px;
+    width: fit-content;
+  }
+</style>
+
+
+  
 </body>
+
 </html>

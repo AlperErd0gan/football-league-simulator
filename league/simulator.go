@@ -25,6 +25,7 @@ func simulateGoals(mean float64) int {
 
 
 type StrengthBasedSimulator struct{}
+
 func (s *StrengthBasedSimulator) SimulateMatch(home, away *Team) Match {
 
 	// Normalize strength to scoring potential (e.g., 1.5–3.5 range)
@@ -38,14 +39,23 @@ func (s *StrengthBasedSimulator) SimulateMatch(home, away *Team) Match {
 	homeGoals := simulateGoals(homeMeanGoals)
 	awayGoals := simulateGoals(awayMeanGoals)
 
+	home.GamesPlayed++
+	away.GamesPlayed++
+
 	// Points
 	if homeGoals > awayGoals {
 		home.Points += 3
+		home.Wins++
+		away.Losses++
 	} else if awayGoals > homeGoals {
 		away.Points += 3
+		away.Wins++
+		home.Losses++
 	} else {
 		home.Points += 1
 		away.Points += 1
+		home.Draws++
+		away.Draws++
 	}
 
 	home.GoalsScored += homeGoals

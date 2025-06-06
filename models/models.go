@@ -10,7 +10,12 @@ type TeamModel struct {
 	Points       int
 	GoalsScored  int
 	GoalsAgainst int
+	GamesPlayed  int
+	Wins         int
+	Draws        int
+	Losses       int
 }
+
 
 type MatchModel struct {
 	gorm.Model

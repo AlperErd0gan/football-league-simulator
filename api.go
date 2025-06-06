@@ -57,6 +57,12 @@ func getLeague(w http.ResponseWriter, r *http.Request) {
 			Points:       t.Points,
 			GoalsScored:  t.GoalsScored,
 			GoalsAgainst: t.GoalsAgainst,
+			GamesPlayed:  t.GamesPlayed,
+			Wins:         t.Wins,
+			Draws:        t.Draws,
+			Losses:       t.Losses,
+			
+
 		})
 	}
 	sort.Slice(teams, func(i, j int) bool {
