@@ -121,9 +121,8 @@ You can test the app live using the built-in frontend or connect to the API dire
 - Postman collection included
 
 
-## 🙋‍♂️ Author
-Alper Erdoğan
-GitHub
+## 🙋‍♂️ Author: Alper Erdoğan
+
 
 
 
