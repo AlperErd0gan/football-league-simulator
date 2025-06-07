@@ -24,6 +24,11 @@ A backend simulation of a football league implemented in Go (Golang), complete w
 │   └── football-league-api.postman_collection.json  # Postman collection for testing
 └── go.mod / go.sum                # Go module dependencies
 ```
+## 🌍 Live Demo
+
+🔗 [football-league-simulator-1.onrender.com](https://football-league-simulator-1.onrender.com)
+
+You can test the app live using the built-in frontend or connect to the API directly.
 
 ## 🚀 Running the Project Locally
 
@@ -64,12 +69,6 @@ A ready-to-use Postman collection is provided:
 3. Choose the file found in postman folder in the Github directory
 
 4. Import local json for local testing or deployed URL 
-
-## 🌍 Live Demo
-
-🔗 [football-league-simulator-1.onrender.com](https://football-league-simulator-1.onrender.com)
-
-You can test the app live using the built-in frontend or connect to the API directly.
 
 ### 🔌 Included Endpoints
 
