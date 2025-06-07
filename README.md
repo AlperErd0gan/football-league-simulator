@@ -120,8 +120,10 @@ You can test the app live using the built-in frontend or connect to the API dire
 
 - Postman collection included
 
+## 👤 Author
 
-## Author: Alper Erdogan
+- **Alper Erdogan**
+- GitHub: @AlperErd0gan
 
 
 
