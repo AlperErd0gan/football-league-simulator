@@ -30,6 +30,11 @@ A backend simulation of a football league implemented in Go (Golang), complete w
 
 You can test the app live using the built-in frontend or connect to the API directly. **Accessing live demo can take some time. Please wait 30 seconds for loading.**
 
+## ⚠️ Note:
+- Since the deployed version uses Render's free tier, it may take 20–30 seconds to wake up before responding to the first request. Alternatively, you can clone the repository from GitHub and run the project locally.
+
+- A Postman collection is also provided to help you test all API endpoints — both locally and on the deployed server. You can import the collection into Postman and try the requests directly.
+
 ## 🚀 Running the Project Locally
 
 ### 🛠 Prerequisites
