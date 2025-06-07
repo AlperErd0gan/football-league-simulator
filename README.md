@@ -29,6 +29,7 @@ A backend simulation of a football league implemented in Go (Golang), complete w
 🔗 [football-league-simulator-1.onrender.com](https://football-league-simulator-1.onrender.com)
 
 You can test the app live using the built-in frontend or connect to the API directly.
+**Accessing live demo can take some time. Please wait 30-40 seconds for application loading**
 
 ## 🚀 Running the Project Locally
 
