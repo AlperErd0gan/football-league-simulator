@@ -30,7 +30,7 @@ func generateFixtures(teams []*Team) [][]Match {
 	n := len(teams)
 	var fixtures [][]Match
 
-	// First leg (round-robin)
+	// First leg 
 	for week := 0; week < n-1; week++ {
 		var weekMatches []Match
 		for i := 0; i < n/2; i++ {
@@ -48,7 +48,7 @@ func generateFixtures(teams []*Team) [][]Match {
 		fixtures = append(fixtures, weekMatches)
 	}
 
-	// Second leg (reverse fixtures)
+	// Second leg
 	offset := len(fixtures)
 	for _, matches := range fixtures {
 		var reverseWeek []Match
@@ -143,7 +143,7 @@ func (l *League) PlayAllWeeks() {
 			result.Week = l.Week + 1
 			l.Results = append(l.Results, result)
 
-			// ✅ Insert into DB
+			// Insert into DB
 			l.DB.Create(&models.MatchModel{
 				Week:      result.Week,
 				Home:      result.Home.Name,
@@ -152,7 +152,7 @@ func (l *League) PlayAllWeeks() {
 				AwayGoals: result.AwayGoals,
 			})
 
-			// ✅ Update team stats in DB
+			// Update team stats in DB
 			l.DB.Model(&models.TeamModel{}).Where("name = ?", result.Home.Name).Updates(map[string]interface{}{
 				"Points":       result.Home.Points,
 				"GoalsScored":  result.Home.GoalsScored,
@@ -177,7 +177,7 @@ func (l *League) PlayAllWeeks() {
 
 		l.Week++
 	}
-	// 🔁 Refresh in-memory league.Teams after DB updates
+	// Refresh in-memory league.teams after DB updates
 		var updated []models.TeamModel
 		l.DB.Find(&updated)
 

@@ -28,12 +28,12 @@ type StrengthBasedSimulator struct{}
 
 func (s *StrengthBasedSimulator) SimulateMatch(home, away *Team) Match {
 
-	// Normalize strength to scoring potential (e.g., 1.5–3.5 range)
+	// Normalize strength to scoring potential
 	homeScoreFactor := float64(home.Strength) / float64(home.Strength+away.Strength)
 	awayScoreFactor := float64(away.Strength) / float64(home.Strength+away.Strength)
 
-	// Use base mean goals to simulate scoring chance
-	homeMeanGoals := 1.5 + homeScoreFactor*2 // range ~1.5–3.5
+	// Base mean goals 
+	homeMeanGoals := 1.5 + homeScoreFactor*2 
 	awayMeanGoals := 1.5 + awayScoreFactor*2
 
 	homeGoals := simulateGoals(homeMeanGoals)

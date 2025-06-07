@@ -43,7 +43,7 @@ func main() {
 	initAPI(l)
 	http.Handle("/", http.FileServer(http.Dir("./static")))
 
-	// ✅ Use PORT from environment for Render compatibility
+	// Use PORT from environment for Render compatibility
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080" // fallback for local dev

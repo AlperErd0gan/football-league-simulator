@@ -18,12 +18,14 @@ func InitDB() {
 
 	// Auto-migrate your tables
 	DB.AutoMigrate(&models.TeamModel{}, &models.MatchModel{})
-		// 🔥 Wipe existing data (reset DB on startup)
+		// Wipe existing data 
 	DB.Exec("DELETE FROM team_models")
 	DB.Exec("DELETE FROM match_models")
 
 
 	// If I want to reset the auto-increment counters
+	// This is optional, but useful if you want to reset the IDs
+	// Can be commented out if not needed
 	 DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'team_models'")
 	 DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'match_models'")
 

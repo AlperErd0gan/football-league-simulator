@@ -140,7 +140,7 @@
       const topTeam = data.table[0]; // Sorted by backend
       predictionList.innerHTML = `<li>🏆 Winner: <strong>${topTeam.Name}</strong> with ${topTeam.Points} points and GD ${topTeam.GoalsScored - topTeam.GoalsAgainst}</li>`;
     } else if (data.week >= 4) {
-      // Show predictions before the end
+      // Show predictions if we are not in week 6
       for (const [team, percent] of Object.entries(data.predictions)) {
         predictionList.innerHTML += `<li>${team}: ${percent}% chance to win</li>`;
       }
@@ -166,21 +166,21 @@
     async function restartLeague() {
       await fetch("/restart", { method: "POST" });
 
-      // Refresh league table
+   
       fetchLeague();
 
-      // Clear results section
+      // Clear results section annd predictions
       const resultsList = document.getElementById("results");
       resultsList.innerHTML = "";
 
-      // Clear prediction section
+    
       const predictionList = document.getElementById("predictions");
       predictionList.innerHTML = "";
 
       const resultEditText = document.getElementById("editResultMessage");
      document.getElementById("editResultMessage").innerText = "League has been reset. You can now play the first week.";
 
-      // Update week title to reflect reset
+      // Update week t
       updateWeekTitle();
 
       // Re-enable buttons
@@ -243,7 +243,7 @@ async function editMatch(event) {
   const result = await response.json();
   document.getElementById("editResultMessage").innerText = result.status || "Something went wrong";
 
-  // Refresh league and results to reflect changes
+  // Refresh league and results 
   await fetchLeague();
   await fetchAllResults();
 }
@@ -268,7 +268,7 @@ async function editMatch(event) {
   const result = await response.json();
   document.getElementById("editResultMessage").innerText = result.status || "Something went wrong";
 
-  // Refresh league and results to reflect changes
+  // Refresh league and results 
   await fetchLeague();
   await fetchAllResults();
 }
@@ -295,7 +295,7 @@ async function editMatch(event) {
   }
 
   #editMatchForm button {
-    grid-column: 2; /* Align button under inputs */
+    grid-column: 2; 
     padding: 8px 12px;
     width: fit-content;
   }

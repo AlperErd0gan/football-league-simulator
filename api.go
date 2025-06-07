@@ -73,7 +73,7 @@ func getLeague(w http.ResponseWriter, r *http.Request) {
 		return teams[i].Points > teams[j].Points
 	})
 
-	// Find the last played week from the Results slice
+
 	lastWeek := 0
 	for _, match := range leagueInstance.Results {
 		if match.Week > lastWeek {
@@ -89,7 +89,7 @@ func getLeague(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Predictions (simple % based on points)
+	// Predictions we get simple % based on points
 	totalPoints := 0
 	for _, team := range teams {
 		totalPoints += team.Points
@@ -140,7 +140,7 @@ func getCurrentWeek(w http.ResponseWriter, r *http.Request) {
 
 	week := 0
 	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		// Sadece ciddi hataları logla
+		// Only log unexpected errors
 		log.Println("Unexpected DB error:", result.Error)
 	}
 	if result.Error == nil {
@@ -156,7 +156,7 @@ func getCurrentWeek(w http.ResponseWriter, r *http.Request) {
 
 
 func restartLeague(w http.ResponseWriter, r *http.Request) {
-	// Reset DB
+	// Reset DB to restart the league
 
 	DB.Exec("DELETE FROM team_models")
 	DB.Exec("DELETE FROM match_models")
@@ -166,7 +166,7 @@ func restartLeague(w http.ResponseWriter, r *http.Request) {
 	DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'match_models'")
 
 
-	// Re-insert original teams
+
 	initial := []models.TeamModel{
 		{Name: "Arsenal", Strength: 90},
 		{Name: "Leeds", Strength: 70},
@@ -255,7 +255,7 @@ func recalculateLeague() {
 		updateTeamStats(match)
 	}
 
-	// ✅ Reset in-memory league to reflect updated DB
+	// Reset  league to reflect updated DB
 	var newTeams []*league.Team
 	for _, t := range teams {
 		newTeams = append(newTeams, &league.Team{
