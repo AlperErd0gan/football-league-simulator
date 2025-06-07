@@ -68,7 +68,7 @@
 
         <button type="submit">Update Result</button>
       </form>
-      <p id="editResultMessage"></p>
+      <p id="editResultMessage" style="color: green; margin-top: 10px;">League has been reset. You can now play the first week.</p>
     </div>
 
 </div>
@@ -150,11 +150,13 @@
  
 
     async function playWeek() {
+      document.getElementById("editResultMessage").innerText = "";
       await fetch("/play/week", { method: "POST" });
       fetchLeague();
     }
 
     async function playAll() {
+      document.getElementById("editResultMessage").innerText = "";
       await fetch("/play/all", { method: "POST" });
       await fetchLeague();
       await fetchAllResults();

@@ -157,11 +157,19 @@ func (l *League) PlayAllWeeks() {
 				"Points":       result.Home.Points,
 				"GoalsScored":  result.Home.GoalsScored,
 				"GoalsAgainst": result.Home.GoalsAgainst,
+				"GamesPlayed":  result.Home.GamesPlayed,
+				"Wins":         result.Home.Wins,
+				"Draws":        result.Home.Draws,
+				"Losses":       result.Home.Losses,
 			})
 			l.DB.Model(&models.TeamModel{}).Where("name = ?", result.Away.Name).Updates(map[string]interface{}{
 				"Points":       result.Away.Points,
 				"GoalsScored":  result.Away.GoalsScored,
 				"GoalsAgainst": result.Away.GoalsAgainst,
+				"GamesPlayed":  result.Away.GamesPlayed,
+				"Wins":         result.Away.Wins,
+				"Draws":        result.Away.Draws,
+				"Losses":       result.Away.Losses,
 			})
 
 			fmt.Printf("%s %d - %d %s\n", result.Home.Name, result.HomeGoals, result.AwayGoals, result.Away.Name)
@@ -169,6 +177,25 @@ func (l *League) PlayAllWeeks() {
 
 		l.Week++
 	}
+	// 🔁 Refresh in-memory league.Teams after DB updates
+		var updated []models.TeamModel
+		l.DB.Find(&updated)
+
+		var refreshed []*Team
+		for _, t := range updated {
+			refreshed = append(refreshed, &Team{
+				Name:         t.Name,
+				Strength:     t.Strength,
+				Points:       t.Points,
+				GoalsScored:  t.GoalsScored,
+				GoalsAgainst: t.GoalsAgainst,
+				GamesPlayed:  t.GamesPlayed,
+				Wins:         t.Wins,
+				Draws:        t.Draws,
+				Losses:       t.Losses,
+			})
+		}
+		l.Teams = refreshed
 	fmt.Println("\n✅ All weeks completed.")
 	fmt.Println("\n🏁 Final League Standings:")
 	l.PrintTable()
