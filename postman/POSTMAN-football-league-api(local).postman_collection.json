@@ -1,0 +1,180 @@
+{
+	"info": {
+		"_postman_id": "f26ab0fe-5052-4b12-b9f2-fa6725490931",
+		"name": "POSTMAN-football-league-api(local)",
+		"description": "This collection contains REST API endpoints for simulating a mini football league, including functionality for match simulation, results tracking, editing, and prediction.\n\n#### 1\\. `GET /league` – **Get League Table**\n\nFetches the current league standings, including:\n\n- Points (PTS), Wins, Draws, Losses, Goal Difference\n    \n- The last played week's match results\n    \n- Predicted chances of each team winning the league\n    \n\n#### 2\\. `POST /play/week` – **Play Next Week**\n\nSimulates the next week's set of matches.\n\n#### 3\\. `POST /play/all` – **Play All Weeks**\n\nSimulates all remaining weeks of the season at once.\n\n#### 4\\. `POST /restart` – **Restart the League**\n\nResets the league to its original state. All team stats and match results are cleared.\n\n#### 5\\. `GET /results/all` – **Get All Match Results**\n\nReturns a grouped list of all match results organized by week.\n\n#### 6\\. `POST /edit/match` – **Edit Match Result**\n\nAllows you to edit an individual match result by `ID`. Automatically recalculates team standings based on the updated scores.\n\n📌 Example body:\n\n``` json\n{\n  \"ID\": 3,\n  \"HomeGoals\": 2,\n  \"AwayGoals\": 1\n}\n\n\n ```",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "45518320",
+		"_collection_link": "https://alpererdogan.postman.co/workspace/Alper-Erdogan's-Workspace~267a0782-55dc-41a9-8ea8-486707576d7c/collection/45518320-f26ab0fe-5052-4b12-b9f2-fa6725490931?action=share&source=collection_link&creator=45518320"
+	},
+	"item": [
+		{
+			"name": "/get/league (local)",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/league",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"league"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/play/all (local)",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/play/all",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"play",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/play/week (local)",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/play/week",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"play",
+						"week"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/restart (local)",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/restart",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"restart"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/results/all (local)",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/results/all",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"results",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/edit/match (local)",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"ID\": 1,\n  \"HomeGoals\": 2,\n  \"AwayGoals\": 3\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/edit/match",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"edit",
+						"match"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/debug/db (local)",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/debug/db",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"debug",
+						"db"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
