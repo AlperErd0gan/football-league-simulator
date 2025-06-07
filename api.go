@@ -246,8 +246,13 @@ func recalculateLeague() {
 		team.Points = 0
 		team.GoalsScored = 0
 		team.GoalsAgainst = 0
+		team.GamesPlayed = 0
+		team.Wins = 0
+		team.Draws = 0
+		team.Losses = 0
 		DB.Save(&team)
 	}
+
 
 	var matches []models.MatchModel
 	DB.Order("week asc").Find(&matches)
@@ -277,12 +282,22 @@ func updateTeamStats(match models.MatchModel) {
 	// Update Points
 	if match.HomeGoals > match.AwayGoals {
 		home.Points += 3
+		home.Wins++
+		away.Losses++
 	} else if match.AwayGoals > match.HomeGoals {
 		away.Points += 3
+		away.Wins++
+		home.Losses++
 	} else {
 		home.Points += 1
 		away.Points += 1
+		home.Draws++
+		away.Draws++
 	}
+	// Update Games Played
+	home.GamesPlayed++
+	away.GamesPlayed++
+
 
 	// Update Goals
 	home.GoalsScored += match.HomeGoals
