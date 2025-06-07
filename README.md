@@ -38,7 +38,7 @@ A backend simulation of a football league implemented in Go (Golang), complete w
 1. Clone the repository
 
 ```bash
-git clone hhttps://github.com/AlperErd0gan/football-league-simulator.git
+git clone https://github.com/AlperErd0gan/football-league-simulator.git
 cd football-league-simulator
 ```
 
@@ -61,7 +61,7 @@ A ready-to-use Postman collection is provided:
 
 2. Click Import
 
-3. Choose the file found in postman folder
+3. Choose the file found in postman folder in the Github directory
 
 4. Import local json for local testing or deployed URL 
 
